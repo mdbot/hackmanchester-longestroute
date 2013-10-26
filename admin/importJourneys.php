@@ -8,6 +8,7 @@
 	}
 
 	$database = new Database();
+	$database->clearJourneys();
 	$stations = new ParseJourneys(dirname(__FILE__) . '/traindata', $database);
 	$stations->parse();
 ?>
