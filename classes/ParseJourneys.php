@@ -66,7 +66,7 @@
 		 * @return True if we were able to parse some data.
 		 */
 		public function parse() {
-			$handle = fopen($this->file, 'r');
+			$handle = gzopen($this->file, 'r');
 			if ($handle) {
 				while (($line = fgets($handle)) !== false) {
 					$this->parseLine($line);
