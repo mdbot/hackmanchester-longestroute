@@ -1,2 +1,0 @@
-DROP TABLE IF EXISTS `stations`;
-CREATE TABLE `stations` ( `name` text NOT NULL, `tiploc` char(32) NOT NULL, `latitude` double NOT NULL, `longitude` double NOT NULL, PRIMARY KEY (`tiploc`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
