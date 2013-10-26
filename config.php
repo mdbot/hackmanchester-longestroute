@@ -7,7 +7,7 @@
 	                  'database' => 'longestroute',
 	);
 	
-	if (gethostname() == 'shanetest.j.layershift.co.uk') {
+	if (stristr(gethostname(), 'shanetest') !== false) {
 		$dbconfig['host'] = 'mariadb-shanetest.j.layershift.co.uk';
 		$dbconfig['password'] = 'pedgfZR1tg';
 	}
