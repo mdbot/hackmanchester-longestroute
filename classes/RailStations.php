@@ -34,4 +34,12 @@ class RailStations
 			return new RailStation($response);
 		}
 	}
+
+	public function getStationsDirectlyReachableFrom($station) {
+		$stations = array();
+		foreach ($this->_db->fetchDirectlyReachableStations($station->getTiploc()) as $result) {
+			$stations[] = new RailStation($result);
+		}
+		return $stations;
+	}
 }

@@ -31,17 +31,18 @@
 		
 		public function storeJourney($source, $destination) {
 			$stmt = $this->db->prepare('INSERT INTO journeys (source, destination) VALUES (:source, :destination)');
-				if ($stmt) {
-					if ($stmt->execute(array(':source' => $source, ':destination' => $destination))) {
-						return TRUE;
-					}
-			}
-			return FALSE;
+			$stmt->execute(array(':source' => $source, ':destination' => $destination));
 		}
 
 		public function fetchStationByCrs($crs) {
 			$stmt = $this->db->prepare("SELECT name, crs, tiploc, latitude, longitude FROM stations WHERE crs=:crs");
 			$stmt->execute(array('crs' => $crs));
 			return $stmt->fetch();
+		}
+
+		public function fetchDirectlyReachableStations($tiploc) {
+			$stmt = $this->db->prepare("SELECT stations.name, stations.crs, stations.tiploc, stations.latitude, stations.longitude FROM stations, journeys WHERE stations.tiploc = journeys.destination AND journeys.source = :tiploc");
+			$stmt->execute(array('tiploc' => $tiploc));
+			return $stmt->fetchAll();
 		}
 	}

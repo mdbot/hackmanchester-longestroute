@@ -48,7 +48,6 @@
 				$valid = false;
 				foreach ($validLocs as $destination) {
 					if ($valid) {
-						echo $source, ' -> ', $destination, "\n";
 						$this->db->storeJourney($source, $destination);
 					} else {
 						$valid = ($source == $destination);
@@ -68,9 +67,17 @@
 		public function parse() {
 			$handle = gzopen($this->file, 'r');
 			if ($handle) {
+				$this->db->db->beginTransaction();
+				$i = 1;
 				while (($line = fgets($handle)) !== false) {
+					echo $i++ , "\n";
+					if ($i % 10000 == 0) {
+						$this->db->db->commit();
+						$this->db->db->beginTransaction();
+					}
 					$this->parseLine($line);
 				}
+				$this->db->db->commit();
 				return TRUE;
 			} else {
 				return FALSE;
