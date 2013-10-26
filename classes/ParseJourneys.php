@@ -23,6 +23,37 @@
 		}
 
 		/**
+		 * Parse an individual line of data.
+		 *
+		 * @param $line Line to parse.
+		 * @return true if the line was parsed as location data, else false.
+		 */
+		private function parseLine($line) {
+			$json = json_decode($line);
+			if (!isset($json->JsonScheduleV1->schedule_segment->schedule_location)) {
+				return FALSE;
+			}
+
+			$locations = $json->JsonScheduleV1->schedule_segment->schedule_location;
+			$prev = '';
+			foreach ($locations as $loc) {
+				// Ignore Junctions
+				if (!isset($loc->public_arrival) && !isset($loc->public_departure)) { continue; }
+
+				if (empty($prev)) {
+					$prev = $loc->tiploc_code;
+				} else {
+					if ($this->db->storeJourney($prev, $loc->tiploc_code)) {
+						echo $prev, ' -> ', $loc->tiploc_code, "\n";
+					}
+					$prev = $loc->tiploc_code;
+				}
+			}
+
+			return TRUE;
+		}
+
+		/**
 		 * Parse the file.
 		 *
 		 * @return True if we were able to parse some data.
@@ -30,26 +61,8 @@
 		public function parse() {
 			$handle = fopen($this->file, 'r');
 			if ($handle) {
-				$this->db->clearJourneys();
 				while (($line = fgets($handle)) !== false) {
-					$json = json_decode($line);
-					if (isset($json->JsonScheduleV1->schedule_segment->schedule_location)) {
-						$locations = $json->JsonScheduleV1->schedule_segment->schedule_location;
-						$prev = '';
-						foreach ($locations as $loc) {
-							// Ignore Junctions
-							if (!isset($loc->public_arrival) && !isset($loc->public_departure)) { continue; }
-						
-							if (empty($prev)) {
-								$prev = $loc->tiploc_code;
-							} else {
-								if ($this->db->storeJourney($prev, $loc->tiploc_code)) {
-									echo $prev, ' -> ', $loc->tiploc_code, "\n";
-								}
-								$prev = $loc->tiploc_code;
-							}
-						}
-					}
+					$this->parseLine($line);
 				}
 				return TRUE;
 			} else {
