@@ -9,15 +9,16 @@
 
 		public function setupStationsTable() {
 			$this->db->query("DROP TABLE IF EXISTS `stations`;");
-			$this->db->query("CREATE TABLE `stations` ( `name` text NOT NULL, `tiploc` char(32) NOT NULL, `latitude` double NOT NULL, `longitude` double NOT NULL, PRIMARY KEY (`tiploc`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+			$this->db->query("CREATE TABLE `stations` ( `name` text NOT NULL, `crs` char(3) NOT NULL, `tiploc` char(32) NOT NULL, `latitude` double NOT NULL, `longitude` double NOT NULL, PRIMARY KEY (`tiploc`), UNIQUE KEY `crs` (`crs`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 		}
 
-		public function storeStation($tiploc, $name, $latitude, $longitude) {
-			$stmt = $this->db->prepare('INSERT INTO stations(tiploc, name, latitude, longitude) VALUES (:tiploc, :name, :latitude, :longitude)');
+		public function storeStation($tiploc, $crs, $name, $latitude, $longitude) {
+			$stmt = $this->db->prepare('INSERT INTO stations(tiploc, crs, name, latitude, longitude) VALUES (:tiploc, :crs, :name, :latitude, :longitude)');
 			$stmt->execute(
 				array(
 					":tiploc" => $tiploc,
 					":name" => $name,
+					":crs" => $crs,
 					":latitude" => $latitude,
 					":longitude" => $longitude
 				)
@@ -36,5 +37,11 @@
 					}
 			}
 			return FALSE;
+		}
+
+		public function fetchStationByCrs($crs) {
+			$stmt = $this->db->prepare("SELECT name, crs, tiploc, latitude, longitude FROM stations WHERE crs=:crs");
+			$stmt->execute(array('crs' => $crs));
+			return $stmt->fetch();
 		}
 	}

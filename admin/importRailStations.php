@@ -24,7 +24,7 @@
 		<? foreach (CsvRailStation::loadFromCsv() as $railStation) : ?>
 			<? $railStations->storeStation($railStation); ?>
 			<tr>
-				<td><?= $railStation->getName(); ?></td>
+				<td><?= $railStation->getName(); ?> (<?= $railStation->getCrs(); ?>)</td>
 				<td><?= $railStation->getTiploc(); ?></td>
 				<td><?= $railStation->getLatitude(); ?></td>
 				<td><?= $railStation->getLongitude(); ?></td>

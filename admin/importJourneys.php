@@ -6,4 +6,3 @@
 	$database = new Database();
 	$stations = new ParseJourneys(dirname(__FILE__) . '/traindata', $database);
 	$stations->parse();
-?>

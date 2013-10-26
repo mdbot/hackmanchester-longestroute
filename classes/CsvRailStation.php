@@ -19,6 +19,7 @@ class CsvRailStation
 
 	public function __construct($line) {
 		$this->_tiploc = $line[1];
+		$this->_crs = $line[2];
 		$this->_name = mb_substr($line[3], 0, mb_strlen($line[3]) - 13); // strip 'Rail Station' off end of name
 		$this->_latLng = new OSRef($line[6], $line[7]);
 		$this->_latLng = $this->_latLng->toLatLng();
@@ -26,6 +27,10 @@ class CsvRailStation
 
 	public function getTiploc() {
 		return $this->_tiploc;
+	}
+
+	public function getCrs() {
+		return $this->_crs;
 	}
 
 	public function getName() {
@@ -43,5 +48,6 @@ class CsvRailStation
 	private $_tiploc;
 	private $_name;
 	private $_latLng;
+	private $_crs;
 
 }

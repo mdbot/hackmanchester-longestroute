@@ -19,9 +19,19 @@ class RailStations
 	public function storeStation($station) {
 		$this->_db->storeStation(
 			$station->getTiploc(),
+			$station->getCrs(),
 			$station->getName(),
 			$station->getLatitude(),
 			$station->getLongitude()
 		);
+	}
+
+	public function getByCrs($crs) {
+		$response = $this->_db->fetchStationByCrs($crs);
+		if (empty($response)) {
+			throw new UnrecognisedCodeException();
+		} else {
+			return new RailStation($response);
+		}
 	}
 }
