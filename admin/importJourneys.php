@@ -1,5 +1,6 @@
 <?php
 	require_once(dirname(__FILE__) . '/../classes/ParseJourneys.php');
+	require_once(dirname(__FILE__) . '/../config.php');
 
 	if (php_sapi_name() != 'cli') { die('This script takes about 20 minutes to run, please run from CLI.'); }
 
@@ -7,7 +8,7 @@
 		die('This needs a traindata file to work.');
 	}
 
-	$database = new Database();
+	$database = new Database($dbconfig);
 	$database->clearJourneys();
 	$stations = new ParseJourneys(dirname(__FILE__) . '/data/schedule.gz', $database);
 	$stations->parse();

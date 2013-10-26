@@ -1,9 +1,10 @@
 <?php
-	require('../classes/CsvRailStation.php');
-	require('../classes/Database.php');
-	require('../classes/RailStations.php');
+	require_once(dirname(__FILE__) . '/../classes/CsvRailStation.php');
+	require_once(dirname(__FILE__) . '/../classes/Database.php');
+	require_once(dirname(__FILE__) . '/../classes/RailStations.php');
+	require_once(dirname(__FILE__) . '/../config.php');
 
-	$railStations = new RailStations(new Database());
+	$railStations = new RailStations(new Database($dbconfig));
 	$railStations->initStationsStorage();
 ?>
 <html>

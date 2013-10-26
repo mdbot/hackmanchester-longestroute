@@ -2,9 +2,9 @@
 
 	class Database {
 		
-		public function __construct() {
+		public function __construct($dbconfig) {
 			// TODO: Not hard coded.
-			$this->db = new PDO(sprintf('%s:host=%s;dbname=%s', 'mysql', '127.0.0.1', 'longestroute'), 'root', '');
+			$this->db = new PDO(sprintf('%s:host=%s;dbname=%s', $dbconfig['type'], $dbconfig['host'], $dbconfig['database']), $dbconfig['username'], $dbconfig['password']);
 		}
 
 		public function setupStationsTable() {
