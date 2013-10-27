@@ -41,13 +41,12 @@ class RailStations
 	 *
 	 * @return array
 	 */
-	public function getStationsDirectlyReachableFrom($station) {
+	public function getStationsReachableFrom($station) {
 		if (isset($this->_memoisedResults[$station->getTiploc()])) {
 			return $this->_memoisedResults[$station->getTiploc()];
 		} else {
-			error_log("cache miss");
 			$stations = array();
-			foreach ($this->_db->fetchDirectlyReachableStations($station->getTiploc()) as $result) {
+			foreach ($this->_db->fetchReachableStations($station->getTiploc()) as $result) {
 				$stations[] = new RailStation($result);
 			}
 			$this->_memoisedResults[$station->getTiploc()] = $stations;

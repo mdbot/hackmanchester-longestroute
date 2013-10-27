@@ -90,7 +90,7 @@ class JourneyPlanner
 	private function expandOption($option, $destination, $costLimit = 0) {
 		$newOptions = array();
 		/** @var $station RailStation */
-		foreach ($this->_railStations->getStationsDirectlyReachableFrom($option['station']) as $station) {
+		foreach ($this->_railStations->getStationsReachableFrom($option['station']) as $station) {
 			$cost = $option['cost'] + $option['station']->getDistanceTo($station);
 			if (
 				!($this->isStationInArray($station, $option['routeHere']) // prevent loops
