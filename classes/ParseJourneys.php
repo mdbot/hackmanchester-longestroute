@@ -26,9 +26,10 @@
 		 * Parse an individual line of data.
 		 *
 		 * @param $line Line to parse.
+		 * @param $all Store all to/from or just the point-to-point links.
 		 * @return true if the line was parsed as location data, else false.
 		 */
-		private function parseLine($line) {
+		private function parseLine($line, $all = false) {
 			$json = json_decode($line);
 			if (!isset($json->JsonScheduleV1->schedule_segment->schedule_location)) {
 				return FALSE;
@@ -46,9 +47,12 @@
 			foreach ($validLocs as $source) {
 				// We only care about stations AFTER the source in the schedule.
 				$valid = false;
+				$first = true;
 				foreach ($validLocs as $destination) {
 					if ($valid) {
-						$this->db->storeJourney($source, $destination);
+						$this->db->storeJourney($source, $destination, $first);
+						$first = false;
+						if (!$all) { break; }
 					} else {
 						$valid = ($source == $destination);
 						continue;

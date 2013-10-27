@@ -33,9 +33,9 @@
 			$this->queries++;
 		}
 		
-		public function storeJourney($source, $destination) {
-			$stmt = $this->db->prepare('INSERT INTO journeys (source, destination) VALUES (:source, :destination)');
-			$stmt->execute(array(':source' => $source, ':destination' => $destination));
+		public function storeJourney($source, $destination, $direct) {
+			$stmt = $this->db->prepare('INSERT INTO journeys (source, destination, direct) VALUES (:source, :destination, :direct)');
+			$stmt->execute(array(':source' => $source, ':destination' => $destination, ':direct' => ($direct ? 'true' : 'false')));
 			$this->queries++;
 		}
 
