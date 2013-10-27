@@ -34,7 +34,27 @@ class JourneyPlanner
 			$options = $this->expand($options);
 		}
 
-		while (!($scenicOption = $this->desinationInOptions($destination, $options, $bestOption['cost'] * 2))) {
+		if ($bestOption['cost'] > 600) {
+			$scenicMultiplier = 1.25;
+		} elseif ($bestOption['cost'] > 400) {
+			$scenicMultiplier = 1.5;
+		} elseif ($bestOption['cost'] > 200) {
+			$scenicMultiplier = 1.75;
+		} elseif ($bestOption['cost'] > 50) {
+			$scenicMultiplier = 2;
+		} elseif ($bestOption['cost'] > 20) {
+			$scenicMultiplier = 3;
+		} else {
+			$scenicMultiplier = 5;
+		}
+
+		while (
+			!(
+				$scenicOption = $this->desinationInOptions(
+					$destination, $options, $bestOption['cost'] * $scenicMultiplier
+				)
+			)
+		) {
 			$options = $this->expand($options);
 		}
 
