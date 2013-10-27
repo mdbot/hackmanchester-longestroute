@@ -74,6 +74,7 @@
 					if ($i % 10000 == 0) {
 						$this->db->db->commit();
 						$this->db->db->beginTransaction();
+						flush();
 					}
 					$this->parseLine($line);
 				}
