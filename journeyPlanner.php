@@ -1,4 +1,5 @@
 <?php
+	require('config.php');
 	require('classes/Database.php');
 	require('classes/Journey.php');
 	require('classes/JourneyPlanner.php');
@@ -7,7 +8,7 @@
 	require('classes/UnrecognisedCodeException.php');
 	require('vendors/phpcoord-2.3.php');
 
-	$railStations = new RailStations(new Database());
+	$railStations = new RailStations(new Database($dbconfig));
 
 	$journeyPlanner = new JourneyPlanner($railStations);
 	$journey = $journeyPlanner->plan($_GET['from'], $_GET['to']);
