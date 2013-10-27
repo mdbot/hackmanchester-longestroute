@@ -7,8 +7,7 @@
 	                  'database' => 'longestroute',
 	);
 	
-	if (gethostname() == 'shanetest.j.layershift.co.uk') {
-		$dbconfig['host'] = 'mariadb-shanetest.j.layershift.co.uk';
-		$dbconfig['password'] = 'pedgfZR1tg';
+	if (file_exists(dirname(__FILE__) . '/config.local.php')) {
+		require_once(dirname(__FILE__) . '/config.local.php');
 	}
 ?>
