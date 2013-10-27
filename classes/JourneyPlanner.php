@@ -27,11 +27,11 @@ class JourneyPlanner
 				'cost' => 0,
 				'station' => $origin,
 				'routeHere' => array($origin)
-			)
+			), $destination
 		);
 
 		while (!($bestOption = $this->desinationInOptions($destination, $options, 0))) {
-			$options = $this->expand($options);
+			$options = $this->expand($options, $destination);
 		}
 
 		if ($bestOption['cost'] > 600) {
@@ -48,14 +48,10 @@ class JourneyPlanner
 			$scenicMultiplier = 5;
 		}
 
-		while (
-			!(
-				$scenicOption = $this->desinationInOptions(
-					$destination, $options, $bestOption['cost'] * $scenicMultiplier
-				)
-			)
-		) {
-			$options = $this->expand($options);
+		$costLimit = $bestOption['cost'] * $scenicMultiplier;
+
+		while ( ! ( $scenicOption = $this->desinationInOptions( $destination, $options, $costLimit ) ) ) {
+			$options = $this->expand($options, $destination, $costLimit);
 		}
 
 		return new Journey($bestOption['routeHere'], $scenicOption['routeHere']);
@@ -76,20 +72,33 @@ class JourneyPlanner
 		return false;
 	}
 
-	private function expand($options) {
+	private function expand($options, $destination, $costLimit = 0) {
 		$newOptions = array();
 		foreach ($options as $option) {
-			$newOptions = array_merge($newOptions, $this->expandOption($option));
+			$newOptions = array_merge($newOptions, $this->expandOption($option, $destination, $costLimit));
 		}
 		return $newOptions;
  	}
 
-	private function expandOption($option) {
+	/**
+	 * @param     $option
+	 * @param RailStation $destination
+	 * @param int $costLimit
+	 *
+	 * @return array
+	 */
+	private function expandOption($option, $destination, $costLimit = 0) {
 		$newOptions = array();
+		/** @var $station RailStation */
 		foreach ($this->_railStations->getStationsDirectlyReachableFrom($option['station']) as $station) {
-			if (!$this->isStationInArray($station, $option['routeHere'])) { // prevent loops
+			$cost = $option['cost'] + $option['station']->getDistanceTo($station);
+			if (
+				!($this->isStationInArray($station, $option['routeHere']) // prevent loops
+				|| ($station->getTiploc() == $destination->getTiploc() && $cost < $costLimit)
+				)
+			) {
 				$newOptions[] = array(
-					'cost' => $option['cost'] + $option['station']->getDistanceTo($station),
+					'cost' => $cost,
 					'station' => $station,
 					'routeHere' => array_merge($option['routeHere'], array($station))
 				);
