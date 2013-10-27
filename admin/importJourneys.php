@@ -11,4 +11,4 @@
 	$database = new Database($dbconfig);
 	$database->clearJourneys();
 	$stations = new ParseJourneys(dirname(__FILE__) . '/data/schedule.gz', $database);
-	$stations->parse();
+	$stations->parse(true);

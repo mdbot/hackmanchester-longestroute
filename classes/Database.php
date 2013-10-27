@@ -46,8 +46,15 @@
 			return $stmt->fetch();
 		}
 
-		public function fetchDirectlyReachableStations($tiploc) {
+		public function fetchReachableStations($tiploc) {
 			$stmt = $this->db->prepare("SELECT stations.name, stations.crs, stations.tiploc, stations.latitude, stations.longitude FROM stations, journeys WHERE stations.tiploc = journeys.destination AND journeys.source = :tiploc");
+			$stmt->execute(array('tiploc' => $tiploc));
+			$this->queries++;
+			return $stmt->fetchAll();
+		}
+
+		public function fetchDirectlyReachableStations($tiploc) {
+			$stmt = $this->db->prepare("SELECT stations.name, stations.crs, stations.tiploc, stations.latitude, stations.longitude FROM stations, journeys WHERE stations.tiploc = journeys.destination AND journeys.source = :tiploc AND journeys.direct = 'true'");
 			$stmt->execute(array('tiploc' => $tiploc));
 			$this->queries++;
 			return $stmt->fetchAll();
