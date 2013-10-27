@@ -29,7 +29,7 @@
 		 * @param $all Store all to/from or just the point-to-point links.
 		 * @return true if the line was parsed as location data, else false.
 		 */
-		private function parseLine($line, $all = false) {
+		private function parseLine($line, $all) {
 			$json = json_decode($line);
 			if (!isset($json->JsonScheduleV1->schedule_segment->schedule_location)) {
 				return FALSE;
@@ -66,9 +66,10 @@
 		/**
 		 * Parse the file.
 		 *
+		 * @param $all Store all to/from or just the point-to-point links.
 		 * @return True if we were able to parse some data.
 		 */
-		public function parse() {
+		public function parse($all = false) {
 			$handle = gzopen($this->file, 'r');
 			if ($handle) {
 				$this->db->db->beginTransaction();
@@ -80,7 +81,7 @@
 						$this->db->db->beginTransaction();
 						flush();
 					}
-					$this->parseLine($line);
+					$this->parseLine($line, $all);
 				}
 				$this->db->db->commit();
 				return TRUE;
