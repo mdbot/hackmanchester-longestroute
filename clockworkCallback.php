@@ -46,7 +46,7 @@
 	}
 	
 	$clockwork = new Clockwork($clockworkconfig['apikey']);
-	$result = $clockwork->send(array('to' => $fromNumber, 'message' => $message, 'from' => $clockworkconfig['from']));
+	$result = $clockwork->send(array('long' => true, 'to' => $fromNumber, 'message' => $message, 'from' => $clockworkconfig['from']));
 	
 	var_dump($result);
 ?>
