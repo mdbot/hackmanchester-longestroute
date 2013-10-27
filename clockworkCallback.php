@@ -18,8 +18,8 @@
 	$message = 'There was an unknown error.';
 
 	if (empty($fromNumber)) {
-		// Can't return anything without a source message, oh well.
-		die();
+		// Can't return anything without a source number, oh well.
+		die('No source number' . "\n");
 	} else if (empty($content)) {
 		$message = 'To find a journey, please text "TRAIN" followed by 2 station codes - eg "TRAIN MAN EUS" for Manchester Piccadilly to London Euston';
 	} else if (preg_match('/^TRAIN ([A-Z]+) ([A-Z]+)/i', $content, $matches)) {
@@ -37,7 +37,7 @@
 				$stops[] = $stop->getName();
 			}
 
-			$message = 'Found a ' . round($journey->getDistance()) . ' km journey from ' . $fromStation . ' to ' . $toStation . ': ' . implode(' -> ', $stops);
+			$message = 'Found a ' . round($journey->getScenicDistance()) . ' km journey from ' . $fromStation . ' to ' . $toStation . ': ' . implode(' -> ', $stops);
 		} catch (UnrecognisedCodeException $e) {
 			$message = 'Unrecognised station code: ' . $e->getStationCode();
 		}
