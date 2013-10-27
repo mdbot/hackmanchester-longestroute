@@ -29,7 +29,7 @@ class RailStations
 	public function getByCrs($crs) {
 		$response = $this->_db->fetchStationByCrs($crs);
 		if (empty($response)) {
-			throw new UnrecognisedCodeException();
+			throw new UnrecognisedCodeException($crs);
 		} else {
 			return new RailStation($response);
 		}
