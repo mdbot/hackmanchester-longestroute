@@ -28,6 +28,7 @@ CREATE TABLE `journeys` (
   PRIMARY KEY (`source`,`destination`),
   KEY `source` (`source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ALTER TABLE `longestroute`.`journeys` ADD COLUMN `direct` ENUM('true', 'false')  NOT NULL DEFAULT 'false' AFTER `destination`;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
