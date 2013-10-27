@@ -1,0 +1,3 @@
+[submodule "vendors/clockwork-php"]
+	path = vendors/clockwork-php
+	url = https://github.com/mediaburst/clockwork-php

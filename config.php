@@ -6,7 +6,11 @@
 	                  'host' => '127.0.0.1',
 	                  'database' => 'longestroute',
 	);
-	
+
+	$clockworkconfig = array('from' => '',
+	                         'apikey' => '',
+	);
+
 	if (file_exists(dirname(__FILE__) . '/config.local.php')) {
 		require_once(dirname(__FILE__) . '/config.local.php');
 	}
