@@ -8,7 +8,8 @@
 	require('classes/UnrecognisedCodeException.php');
 	require('vendors/phpcoord-2.3.php');
 
-	$railStations = new RailStations(new Database($dbconfig));
+	$database = new Database($dbconfig);
+	$railStations = new RailStations($database);
 
 	$journeyPlanner = new JourneyPlanner($railStations);
 	$journey = $journeyPlanner->plan($_GET['from'], $_GET['to']);
@@ -22,11 +23,13 @@
 		From: <?= $journey->getOrigin(); ?>
 		To: <?= $journey->getDestination(); ?>
 	</h1>
-	<h2>Most Direct Route (<?= round($journey->getDistance()); ?> km)</h2>
+	<h2>Scenic Route (<?= round($journey->getScenicDistance()); ?> km)</h2>
 	<ol>
 		<? foreach ($journey->getStops() as $stop) : ?>
 			<li><?= $stop->getName(); ?></li>
 		<? endforeach; ?>
 	</ol>
+	<aside>The most direct route is <?= round($journey->getDirectDistance()); ?> km</aside>
+	<!-- <?= $database->queries; ?> queries -->
 </body>
 </html>

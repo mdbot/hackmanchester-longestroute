@@ -4,6 +4,7 @@ class JourneyPlanner
 {
 	/** @var RailStations */
 	private $_railStations;
+	private $_expandedNodes = array();
 
 	public function __construct($railStations) {
 		$this->_railStations = $railStations;
@@ -17,43 +18,38 @@ class JourneyPlanner
 	 * @return Journey
 	 */
 	public function plan($origin, $destination) {
+		$this->_expandedNodes = array();
 		$origin = $this->_railStations->getByCrs($origin);
 		$destination = $this->_railStations->getByCrs($destination);
 
-		$journey = array($origin);
+		$options = $this->expandOption(
+			array(
+				'cost' => 0,
+				'station' => $origin,
+				'routeHere' => array($origin)
+			)
+		);
 
-		$firstHopStations = $this->_railStations->getStationsDirectlyReachableFrom($origin);
-		if ($this->isDestinationInArray($destination, $firstHopStations)) {
-			$journey[] = $destination;
-		} else {
-			$options = array();
-			foreach ($firstHopStations as $station) {
-				$options[] = array(
-					'cost' => $origin->getDistanceTo($station),
-					'routeHere' => array($station),
-					'station' => $station,
-					'children' => $this->_railStations->getStationsDirectlyReachableFrom($station)
-				);
-			}
-
-			while (!($bestOption = $this->desinationInOptions($destination, $options))) {
-				$options = $this->expand($options);
-			}
-			$journey = array_merge($journey, $bestOption, array($destination));
+		while (!($bestOption = $this->desinationInOptions($destination, $options, 0))) {
+			$options = $this->expand($options);
 		}
 
-		return new Journey($journey);
+		while (!($scenicOption = $this->desinationInOptions($destination, $options, $bestOption['cost'] * 2))) {
+			$options = $this->expand($options);
+		}
+
+		return new Journey($bestOption['routeHere'], $scenicOption['routeHere']);
 	}
 
 	/**
-	 * @param $destination RailStation
-	 * @param $stations RailStation[]
+	 * @param $needleStation RailStation
+	 * @param $haystack RailStation[]
 	 *
 	 * @return bool
 	 */
-	private function isDestinationInArray($destination, $stations) {
-		foreach ($stations as $station) {
-			if ($station->getTiploc() == $destination->getTiploc()) {
+	private function isStationInArray($needleStation, $haystack) {
+		foreach ($haystack as $station) {
+			if ($station->getTiploc() == $needleStation->getTiploc()) {
 				return true;
 			}
 		}
@@ -70,26 +66,36 @@ class JourneyPlanner
 
 	private function expandOption($option) {
 		$newOptions = array();
-		foreach ($option['children'] as $station) {
-			$newOptions[] = array(
-				'cost' => $option['cost'] + $option['station']->getDistanceTo($station),
-				'expanded' => false,
-				'routeHere' => array_merge($option['routeHere'], array($station)),
-				'children' => $this->_railStations->getStationsDirectlyReachableFrom($station)
-			);
+		foreach ($this->_railStations->getStationsDirectlyReachableFrom($option['station']) as $station) {
+			if (!$this->isStationInArray($station, $option['routeHere'])) { // prevent loops
+				$newOptions[] = array(
+					'cost' => $option['cost'] + $option['station']->getDistanceTo($station),
+					'station' => $station,
+					'routeHere' => array_merge($option['routeHere'], array($station))
+				);
+			}
 		}
 		return $newOptions;
 	}
 
-	private function desinationInOptions($destination, $options) {
+	/**
+	 * @param $destination RailStation
+	 * @param $options
+	 * @param $costLimit int
+	 *
+	 * @return bool
+	 */
+	private function desinationInOptions($destination, $options, $costLimit) {
 		$currentLowestCost = INF;
 		$bestOption = false;
 		foreach ($options as $option) {
-			if ($this->isDestinationInArray($destination, $option['children'])) {
-				if ($option['cost'] < $currentLowestCost) {
-					$bestOption = $option['routeHere'];
-					$currentLowestCost = $option['cost'];
-				}
+			if (
+				$destination->getTiploc() == array_slice($option['routeHere'], -1, 1)[0]->getTiploc()
+				&& $option['cost'] < $currentLowestCost
+				&& $option['cost'] > $costLimit
+			) {
+				$bestOption = $option;
+				$currentLowestCost = $option['cost'];
 			}
 		}
 		return $bestOption;

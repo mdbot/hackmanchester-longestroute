@@ -4,6 +4,7 @@ class RailStations
 {
 	/** @var Database */
 	private $_db;
+	private $_memoisedResults;
 
 	public function __construct($db) {
 		$this->_db = $db;
@@ -35,11 +36,22 @@ class RailStations
 		}
 	}
 
+	/**
+	 * @param $station RailStation
+	 *
+	 * @return array
+	 */
 	public function getStationsDirectlyReachableFrom($station) {
-		$stations = array();
-		foreach ($this->_db->fetchDirectlyReachableStations($station->getTiploc()) as $result) {
-			$stations[] = new RailStation($result);
+		if (isset($this->_memoisedResults[$station->getTiploc()])) {
+			return $this->_memoisedResults[$station->getTiploc()];
+		} else {
+			error_log("cache miss");
+			$stations = array();
+			foreach ($this->_db->fetchDirectlyReachableStations($station->getTiploc()) as $result) {
+				$stations[] = new RailStation($result);
+			}
+			$this->_memoisedResults[$station->getTiploc()] = $stations;
+			return $stations;
 		}
-		return $stations;
 	}
 }
